@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Qdrant installation script
+
+set -e
+
+echo "Installing Qdrant..."
+
+# Create docker-compose file for Qdrant
+cat > /opt/databases/qdrant/docker-compose.yml << EOF
+version: '3.8'
+
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.7.4
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__GRPC_PORT=6334
+      - QDRANT__SERVICE__HTTP_PORT=6333
+EOF
+
+# Create log entry
+echo "$(date): Qdrant installed" >> /var/log/database-install/install.log
+
+echo "Qdrant installation completed!"
+echo "To start Qdrant, navigate to /opt/databases/qdrant and run:"
+echo "docker-compose up -d"
+echo "Qdrant will be available at http://localhost:6333"
